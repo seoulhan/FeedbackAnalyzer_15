@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "Constants.h"
+#include "FileHandler.h"
 #include "Logger.h"
 #include "Session.h"
 
@@ -127,6 +128,15 @@ FeedbackService::FilterOutcome FeedbackService::runFilter(const std::string& sen
     filterResult_.assign(filtered);
     outcome.hasFilteredItems = true;
     outcome.snapshot = analyzeFeedbacks(filterResult_.items());
+
+    constexpr const char* kFilteredCsvPath = "filtered_feedback.csv";
+    if (!FileHandler::saveToCsv(filterResult_.items(), kFilteredCsvPath)) {
+        Logger::logWarning(u8"CSV 파일 저장에 실패했습니다: " +
+                           std::string(kFilteredCsvPath));
+    } else {
+        Logger::logInfo(u8"CSV 파일 저장 완료: " + std::string(kFilteredCsvPath));
+    }
+
     Logger::logInfo(u8"필터링 결과: " +
                     std::to_string(filterResult_.items().size()) + u8"개의 피드백");
     return outcome;

@@ -13,16 +13,23 @@ std::map<std::string, int> TextAnalyzer::createEmptySentimentCounts() {
     return counts;
 }
 
-std::string TextAnalyzer::classifySentimentForText(const std::string& text) {
-    if (TextUtils::containsAny(text,
-                               Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_POSITIVE])) {
+std::string TextAnalyzer::classifyWeighted(const std::string& text) {
+    const int positiveCount = TextUtils::countMatchingKeywords(
+        text, Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_POSITIVE]);
+    const int negativeCount = TextUtils::countMatchingKeywords(
+        text, Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_NEGATIVE]);
+
+    if (positiveCount > negativeCount) {
         return DomainConstants::SENTIMENT_POSITIVE;
     }
-    if (TextUtils::containsAny(text,
-                               Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_NEGATIVE])) {
+    if (negativeCount > positiveCount) {
         return DomainConstants::SENTIMENT_NEGATIVE;
     }
     return DomainConstants::SENTIMENT_NEUTRAL;
+}
+
+std::string TextAnalyzer::classifySentimentForText(const std::string& text) {
+    return classifyWeighted(text);
 }
 
 void TextAnalyzer::incrementSentimentCount(std::map<std::string, int>& counts,
