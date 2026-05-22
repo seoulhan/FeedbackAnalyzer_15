@@ -1,5 +1,6 @@
 #include "Filters.h"
 
+#include "TextAnalyzer.h"
 #include "TextUtils.h"
 
 std::map<std::string, std::vector<std::string>> Filters::S_KEYWORDS;
@@ -23,15 +24,7 @@ void Filters::initFilterKeywords() {
 }
 
 std::string Filters::inferSentimentLabel(const std::string& text) {
-    if (TextUtils::containsAny(text,
-                               Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_POSITIVE])) {
-        return DomainConstants::SENTIMENT_POSITIVE;
-    }
-    if (TextUtils::containsAny(text,
-                               Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_NEGATIVE])) {
-        return DomainConstants::SENTIMENT_NEGATIVE;
-    }
-    return DomainConstants::SENTIMENT_NEUTRAL;
+    return TextAnalyzer::classifyWeighted(text);
 }
 
 std::vector<Feedback> Filters::applySentimentFilter(const std::vector<Feedback>& dataList,

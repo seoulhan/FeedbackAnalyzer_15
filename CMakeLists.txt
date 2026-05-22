@@ -9,6 +9,7 @@ add_executable(feedback_analyzer
     src/cpp/Constants.cpp
     src/cpp/FeedbackController.cpp
     src/cpp/FeedbackService.cpp
+    src/cpp/FileHandler.cpp
     src/cpp/Filters.cpp
     src/cpp/Logger.cpp
     src/cpp/Session.cpp
@@ -48,7 +49,9 @@ endif()
 add_executable(feedback_analyzer_tests
     tests/test_analyzer.cpp
     tests/test_bugfix_red.cpp
+    tests/test_phase7_feature.cpp
     src/cpp/Constants.cpp
+    src/cpp/FileHandler.cpp
     src/cpp/Filters.cpp
     src/cpp/Session.cpp
     src/cpp/TextAnalyzer.cpp

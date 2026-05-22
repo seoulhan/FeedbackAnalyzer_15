@@ -22,6 +22,8 @@ private:
                                      std::map<std::string, int>& counts);
 
 public:
+    static std::string classifyWeighted(const std::string& text);
+
     std::map<std::string, int> analyzeSentiment(const std::vector<Feedback>& feedbacks);
     std::map<std::string, int> analyzeKeywords(const std::vector<Feedback>& feedbacks);
 };

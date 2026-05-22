@@ -97,16 +97,15 @@ TEST_F(AnalyzerTestFixture, EmptyFeedback) {
 }
 
 TEST_F(AnalyzerTestFixture, MixedSentiment) {
-    // 레거시: containsAny(긍정)이 먼저 평가되므로 긍·부정 키워드가 공존하면 "긍정"으로 분류
+    // 가중치: 긍·부정 키워드가 동수이면 "중립" (최고 1 vs 실망 1)
     const auto feedbacks = makeFeedbacks({
         u8"품질은 최고인데 가격이 너무 비싸서 실망했어요.",
     });
 
     const std::map<std::string, int> result = analyzer.analyzeSentiment(feedbacks);
 
-    EXPECT_EQ(1, result.at(kPositive()))
-        << "legacy first-match: positive keywords take precedence over negative";
-    EXPECT_EQ(0, result.at(kNeutral()));
+    EXPECT_EQ(0, result.at(kPositive()));
+    EXPECT_EQ(1, result.at(kNeutral()));
     EXPECT_EQ(0, result.at(kNegative()));
 }
 

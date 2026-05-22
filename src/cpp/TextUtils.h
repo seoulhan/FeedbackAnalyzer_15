@@ -15,4 +15,15 @@ inline bool containsAny(const std::string& text,
     return false;
 }
 
+inline int countMatchingKeywords(const std::string& text,
+                                 const std::vector<std::string>& keywords) {
+    int count = 0;
+    for (const auto& kw : keywords) {
+        if (text.find(kw) != std::string::npos) {
+            ++count;
+        }
+    }
+    return count;
+}
+
 }  // namespace TextUtils
