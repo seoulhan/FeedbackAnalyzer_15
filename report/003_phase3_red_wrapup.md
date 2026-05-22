@@ -79,6 +79,15 @@ ctest --test-dir build --output-on-failure             # 5 PASS, 6 FAIL
 
 - `test_analyzer.cpp`: `kPositive()` 등 `static const std::string` 반환 — `-Wreturn-local-addr`·세그폴트 방지
 - `UnknownKeywords`: `좋았습니다` 포함 문장 → 키워드 없는 `무난했습니다` 문장으로 변경 (`sent()` 중립 고정)
+- `test_analyzer.cpp`: `kPositive()` 등 `static const std::string` 반환 — `-Wreturn-local-addr`·세그폴트 제거
+- `UnknownKeywords`: `좋았습니다` 포함 문장 → 키워드 없는 `무난했습니다` 문장으로 변경 (레거시 `sent()` 중립 고정)
+
+---
+
+## Git
+
+- 커밋: `CMakeLists.txt`, `tests/`, `report/003_*`, `prompt/003_*`
+- `build/` 미추적 유지
 
 ---
 
