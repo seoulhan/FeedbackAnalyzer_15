@@ -2,7 +2,7 @@
 
 **일자:** 2026-05-22  
 **입력:** Phase 5 & 6 리팩토링 프롬프트 (`docs/analysis.md` 기반)  
-**관련:** `refactoring.md`, `report/005_phase4_refactoring_wrapup.md`
+**관련:** `docs/refactoring.md`, `report/005_phase4_refactoring_wrapup.md`
 
 ---
 
@@ -12,7 +12,7 @@
 |------|------|
 | `FeedbackController` Boundary 분리 | **완료** |
 | `FeedbackService` Application 분리 | **완료** |
-| `refactoring.md` (Before/After·의존 명세) | **완료** |
+| `docs/refactoring.md` (Before/After·의존 명세) | **완료** |
 | `main.cpp` 슬림화 (~383 → ~25줄) | **완료** |
 | `ctest` (11건) | **PASS** |
 | `feedback_analyzer` 빌드 | **OK** |
@@ -25,7 +25,7 @@
 |------|------|
 | `src/cpp/FeedbackService.h/.cpp` | 세션·CSV import·분석·필터·`FilterResult` 캡슐화 |
 | `src/cpp/FeedbackController.h/.cpp` | httplib 라우트, 폼 파싱, HTML/CSV 응답 |
-| `refactoring.md` | 아키텍처 비포/애프터·의존 구조 명세 |
+| `docs/refactoring.md` | 아키텍처 비포/애프터·의존 구조 명세 |
 
 ---
 
@@ -61,7 +61,7 @@ ctest --test-dir build --output-on-failure                           # 11/11 Pas
 
 | 경로 | 설명 |
 |------|------|
-| `refactoring.md` | Phase 5&6 아키텍처 비교·의존 명세 |
+| `docs/refactoring.md` | Phase 5&6 아키텍처 비교·의존 명세 |
 | `report/006_phase5_6_srp_controller_service_wrapup.md` | 본 보고서 |
 | `prompt/006_phase5_6_srp_controller_service_wrapup_raw.md` | 입력 프롬프트 원문 |
 | `prompt/006_phase5_6_srp_controller_service_wrapup.md` | 대화 Export Transcript |
