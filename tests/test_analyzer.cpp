@@ -43,9 +43,18 @@ protected:
         return feedbacks;
     }
 
-    static const std::string& kPositive() { return u8"긍정"; }
-    static const std::string& kNeutral() { return u8"중립"; }
-    static const std::string& kNegative() { return u8"부정"; }
+    static const std::string& kPositive() {
+        static const std::string value{u8"긍정"};
+        return value;
+    }
+    static const std::string& kNeutral() {
+        static const std::string value{u8"중립"};
+        return value;
+    }
+    static const std::string& kNegative() {
+        static const std::string value{u8"부정"};
+        return value;
+    }
 };
 
 // ---------------------------------------------------------------------------
@@ -103,7 +112,7 @@ TEST_F(AnalyzerTestFixture, MixedSentiment) {
 
 TEST_F(AnalyzerTestFixture, UnknownKeywords) {
     const auto feedbacks = makeFeedbacks({
-        u8"오늘 날씨가 맑고 산책하기 좋았습니다.",
+        u8"오늘 날씨가 맑고 산책하기 무난했습니다.",
     });
 
     const std::map<std::string, int> result = analyzer.sent(feedbacks);
