@@ -36,7 +36,7 @@ public:
         FeedbackSession::clear();
     }
 
-    static std::vector<Feedback>& getOldDataFromSession(const std::string& key) {
+    static std::vector<Feedback>& getFeedbacksByKey(const std::string& key) {
         return FeedbackSession::getByKey(key);
     }
 

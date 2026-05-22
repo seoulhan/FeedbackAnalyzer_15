@@ -1,58 +1,27 @@
 #pragma once
+
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
-#include "Feedback.h"
+
 #include "Constants.h"
-#include "TextUtils.h"
+#include "Feedback.h"
 
 class TextAnalyzer {
 private:
     static std::map<std::string, int> globalSent;
     static std::map<std::string, int> globalKw;
 
+    static std::map<std::string, int> createEmptySentimentCounts();
+    static std::string classifySentimentForText(const std::string& text);
+    static void incrementSentimentCount(std::map<std::string, int>& counts,
+                                        const std::string& label);
+
+    static std::map<std::string, int> createEmptyKeywordCounts();
+    static void countKeywordsForText(const std::string& text,
+                                     std::map<std::string, int>& counts);
+
 public:
-    std::map<std::string, int> sent(const std::vector<Feedback>& feedbacks) {
-        std::map<std::string, int> res;
-        res[u8"긍정"] = 0;
-        res[u8"중립"] = 0;
-        res[u8"부정"] = 0;
-
-        for (const auto& f : feedbacks) {
-            std::string txt = f.getText();
-            std::string s = u8"중립";
-            if (TextUtils::containsAny(txt, Constants::SENTIMENT_KEYWORDS[u8"긍정"])) {
-                s = u8"긍정";
-            } else if (TextUtils::containsAny(txt, Constants::SENTIMENT_KEYWORDS[u8"부정"])) {
-                s = u8"부정";
-            }
-            res[s]++;
-        }
-
-        globalSent = res;
-        return res;
-    }
-
-    std::map<std::string, int> kw(const std::vector<Feedback>& feedbacks) {
-        std::map<std::string, int> res2;
-        for (const auto& entry : Constants::CATEGORY_KEYWORDS) {
-            res2[entry.first] = 0;
-        }
-
-        for (const auto& f : feedbacks) {
-            std::string txt = f.getText();
-            for (const auto& entry : Constants::CATEGORY_KEYWORDS) {
-                const std::string& cat = entry.first;
-                if (entry.second.count("main")) {
-                    const auto& kws = entry.second.at("main");
-                    if (TextUtils::containsAny(txt, kws)) {
-                        res2[cat]++;
-                    }
-                }
-            }
-        }
-
-        globalKw = res2;
-        return res2;
-    }
+    std::map<std::string, int> analyzeSentiment(const std::vector<Feedback>& feedbacks);
+    std::map<std::string, int> analyzeKeywords(const std::vector<Feedback>& feedbacks);
 };

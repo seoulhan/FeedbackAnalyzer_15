@@ -1,5 +1,7 @@
 #include "Filters.h"
 
+#include "TextUtils.h"
+
 std::map<std::string, std::vector<std::string>> Filters::S_KEYWORDS;
 
 void Filters::initFilterKeywords() {
@@ -18,4 +20,76 @@ void Filters::initFilterKeywords() {
         u8"괜찮", u8"보통", u8"평범", u8"무난", u8"그냥", u8"전반적", u8"완료",
         u8"적당", u8"나쁘지 않", u8"특별", u8"없"
     };
+}
+
+std::string Filters::inferSentimentLabel(const std::string& text) {
+    if (TextUtils::containsAny(text,
+                               Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_POSITIVE])) {
+        return DomainConstants::SENTIMENT_POSITIVE;
+    }
+    if (TextUtils::containsAny(text,
+                               Constants::SENTIMENT_KEYWORDS[DomainConstants::SENTIMENT_NEGATIVE])) {
+        return DomainConstants::SENTIMENT_NEGATIVE;
+    }
+    return DomainConstants::SENTIMENT_NEUTRAL;
+}
+
+std::vector<Feedback> Filters::applySentimentFilter(const std::vector<Feedback>& dataList,
+                                                    const std::string& sentimentFilter) {
+    if (sentimentFilter == DomainConstants::FILTER_ALL) {
+        return dataList;
+    }
+
+    std::vector<Feedback> filtered;
+    for (const auto& item : dataList) {
+        if (inferSentimentLabel(item.getText()) == sentimentFilter) {
+            filtered.push_back(item);
+        }
+    }
+    return filtered;
+}
+
+std::vector<Feedback> Filters::applyKeywordFilter(const std::vector<Feedback>& dataList,
+                                                  const std::string& keywordFilter) {
+    if (keywordFilter == DomainConstants::FILTER_ALL) {
+        return dataList;
+    }
+
+    std::vector<Feedback> filtered;
+    for (const auto& item : dataList) {
+        const std::string& text = item.getText();
+        if (!Constants::CATEGORY_KEYWORDS.count(keywordFilter)) {
+            continue;
+        }
+
+        const auto& categoryMap = Constants::CATEGORY_KEYWORDS[keywordFilter];
+        for (const auto& subEntry : categoryMap) {
+            if (subEntry.first == DomainConstants::CATEGORY_SUBKEY_MAIN) {
+                continue;
+            }
+            if (TextUtils::containsAny(text, subEntry.second)) {
+                filtered.push_back(item);
+                break;
+            }
+        }
+    }
+    return filtered;
+}
+
+void Filters::logFilteredItems(const std::vector<Feedback>& items) {
+    for (const auto& item : items) {
+        std::cout << item.getText() << std::endl;
+    }
+}
+
+std::vector<Feedback> Filters::filter(const std::vector<Feedback>& dataList,
+                                        const std::string& sentimentFilter,
+                                        const std::string& keywordFilter) {
+    const std::vector<Feedback> afterSentiment =
+        applySentimentFilter(dataList, sentimentFilter);
+    const std::vector<Feedback> finalFiltered =
+        applyKeywordFilter(afterSentiment, keywordFilter);
+
+    logFilteredItems(finalFiltered);
+    return finalFiltered;
 }
