@@ -7,6 +7,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_executable(feedback_analyzer
     src/cpp/main.cpp
     src/cpp/Constants.cpp
+    src/cpp/FeedbackController.cpp
+    src/cpp/FeedbackService.cpp
     src/cpp/Filters.cpp
     src/cpp/Logger.cpp
     src/cpp/Session.cpp
