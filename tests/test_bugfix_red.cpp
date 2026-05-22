@@ -39,7 +39,7 @@ bool vectorHasNoDuplicateStrings(const std::vector<std::string>& vec) {
 std::string sentimentViaTextAnalyzer(const std::string& text) {
     TextAnalyzer analyzer;
     const std::map<std::string, int> counts =
-        analyzer.sent({Feedback(text)});
+        analyzer.analyzeSentiment({Feedback(text)});
     if (counts.at(u8"긍정") > 0) {
         return u8"긍정";
     }
@@ -52,13 +52,13 @@ std::string sentimentViaTextAnalyzer(const std::string& text) {
 std::string sentimentViaFilters(const std::string& text) {
     Filters filters;
     const std::vector<Feedback> one = {Feedback(text)};
-    if (!filters.fil(one, u8"긍정", u8"전체").empty()) {
+    if (!filters.filter(one, u8"긍정", u8"전체").empty()) {
         return u8"긍정";
     }
-    if (!filters.fil(one, u8"부정", u8"전체").empty()) {
+    if (!filters.filter(one, u8"부정", u8"전체").empty()) {
         return u8"부정";
     }
-    if (!filters.fil(one, u8"중립", u8"전체").empty()) {
+    if (!filters.filter(one, u8"중립", u8"전체").empty()) {
         return u8"중립";
     }
     return u8"미분류";
@@ -116,7 +116,7 @@ TEST_F(TextUtilsRedFixture, TextUtilsHeaderMustExist) {
 
 TEST_F(TextUtilsRedFixture, ContainsAnyUnifiedSentimentParity) {
     // GREEN 스펙: TextUtils::containsAny 단일 구현 후 동일 키워드 소스로
-    // TextAnalyzer::sent() 분류와 Filters::fil() 감성 필터가 일치해야 함.
+    // TextAnalyzer::analyzeSentiment() 분류와 Filters::filter() 감성 필터가 일치해야 함.
     const std::vector<std::string> samples = {
         u8"친절한 응대였습니다.",
         u8"정말 최고입니다. 만족스럽고 감사합니다.",
@@ -140,15 +140,15 @@ protected:
     void TearDown() override { FeedbackSession::clear(); }
 };
 
-TEST_F(SessionRedFixture, GetOldDataFromSessionIgnoresKey) {
+TEST_F(SessionRedFixture, GetFeedbacksByKeyUsesDistinctStorage) {
     Session::updateCurrentFeedbacks({Feedback(u8"단일 세션 데이터")});
 
-    std::vector<Feedback>& viaAlpha = Session::getOldDataFromSession("alpha");
-    std::vector<Feedback>& viaBeta = Session::getOldDataFromSession("beta");
+    std::vector<Feedback>& viaAlpha = Session::getFeedbacksByKey("alpha");
+    std::vector<Feedback>& viaBeta = Session::getFeedbacksByKey("beta");
 
     EXPECT_NE(&viaAlpha, &viaBeta)
-        << "BUG ③: getOldDataFromSession(key) ignores key; distinct keys must "
-           "not alias the same storage (GREEN: FeedbackSession per key)";
+        << "BUG ③: distinct keys must not alias the same storage "
+           "(GREEN: FeedbackSession per key)";
 }
 
 TEST_F(SessionRedFixture, UpdateWithoutClearLeavesDataVisible) {

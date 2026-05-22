@@ -1,6 +1,6 @@
 /**
  * @file test_analyzer.cpp
- * @brief Google Test 기반 TextAnalyzer::sent() 레거시 동작 안전망
+ * @brief Google Test 기반 TextAnalyzer::analyzeSentiment() 레거시 동작 안전망
  *
  * Phase 2: 프로덕션 코드 변경 없이 현재 비즈니스 규칙을 고정합니다.
  * - 긍정 키워드 우선 매칭 → "긍정"
@@ -66,7 +66,7 @@ TEST_F(AnalyzerTestFixture, PositiveSentiment) {
         u8"정말 최고입니다. 만족스럽고 감사합니다.",
     });
 
-    const std::map<std::string, int> result = analyzer.sent(feedbacks);
+    const std::map<std::string, int> result = analyzer.analyzeSentiment(feedbacks);
 
     EXPECT_EQ(1, result.at(kPositive()));
     EXPECT_EQ(0, result.at(kNeutral()));
@@ -78,7 +78,7 @@ TEST_F(AnalyzerTestFixture, NegativeSentiment) {
         u8"배송이 늦어서 실망스럽고 불만이에요.",
     });
 
-    const std::map<std::string, int> result = analyzer.sent(feedbacks);
+    const std::map<std::string, int> result = analyzer.analyzeSentiment(feedbacks);
 
     EXPECT_EQ(0, result.at(kPositive()));
     EXPECT_EQ(0, result.at(kNeutral()));
@@ -88,7 +88,7 @@ TEST_F(AnalyzerTestFixture, NegativeSentiment) {
 TEST_F(AnalyzerTestFixture, EmptyFeedback) {
     const std::vector<Feedback> feedbacks;
 
-    const std::map<std::string, int> result = analyzer.sent(feedbacks);
+    const std::map<std::string, int> result = analyzer.analyzeSentiment(feedbacks);
 
     EXPECT_EQ(0, result.at(kPositive()));
     EXPECT_EQ(0, result.at(kNeutral()));
@@ -102,7 +102,7 @@ TEST_F(AnalyzerTestFixture, MixedSentiment) {
         u8"품질은 최고인데 가격이 너무 비싸서 실망했어요.",
     });
 
-    const std::map<std::string, int> result = analyzer.sent(feedbacks);
+    const std::map<std::string, int> result = analyzer.analyzeSentiment(feedbacks);
 
     EXPECT_EQ(1, result.at(kPositive()))
         << "legacy first-match: positive keywords take precedence over negative";
@@ -115,7 +115,7 @@ TEST_F(AnalyzerTestFixture, UnknownKeywords) {
         u8"오늘 날씨가 맑고 산책하기 무난했습니다.",
     });
 
-    const std::map<std::string, int> result = analyzer.sent(feedbacks);
+    const std::map<std::string, int> result = analyzer.analyzeSentiment(feedbacks);
 
     EXPECT_EQ(0, result.at(kPositive()));
     EXPECT_EQ(1, result.at(kNeutral()));
