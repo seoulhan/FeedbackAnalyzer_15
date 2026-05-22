@@ -135,7 +135,12 @@ TEST_F(TextUtilsRedFixture, ContainsAnyUnifiedSentimentParity) {
 // BUG ③ — Session / FeedbackSession 테스트 가능 API
 // ---------------------------------------------------------------------------
 
-TEST(SessionRed, GetOldDataFromSessionIgnoresKey) {
+class SessionRedFixture : public ::testing::Test {
+protected:
+    void TearDown() override { FeedbackSession::clear(); }
+};
+
+TEST_F(SessionRedFixture, GetOldDataFromSessionIgnoresKey) {
     Session::updateCurrentFeedbacks({Feedback(u8"단일 세션 데이터")});
 
     std::vector<Feedback>& viaAlpha = Session::getOldDataFromSession("alpha");
@@ -146,15 +151,12 @@ TEST(SessionRed, GetOldDataFromSessionIgnoresKey) {
            "not alias the same storage (GREEN: FeedbackSession per key)";
 }
 
-TEST(SessionRed, UpdateWithoutClearLeavesDataVisible) {
-    // GREEN spec: FeedbackSession::update(); FeedbackSession::clear();
-    //             getCurrent() returns empty vector after clear().
-    // RED: no clear() — after update, data remains until explicitly cleared.
-    Session::updateCurrentFeedbacks({Feedback(u8"세션 데이터")});
-    ASSERT_FALSE(Session::getCurrentFeedbacks().empty());
+TEST_F(SessionRedFixture, UpdateWithoutClearLeavesDataVisible) {
+    // GREEN: FeedbackSession::clear() isolates static state between tests/requests.
+    FeedbackSession::update({Feedback(u8"세션 데이터")});
+    ASSERT_FALSE(FeedbackSession::getCurrent().empty());
 
-    // Simulates a new logical session / HTTP request without clear():
-    EXPECT_TRUE(Session::getCurrentFeedbacks().empty())
-        << "BUG ③: Session lacks clear(); static currentFeedbacks still holds "
-           "previous update() data";
+    FeedbackSession::clear();
+    EXPECT_TRUE(FeedbackSession::getCurrent().empty())
+        << "BUG ③: FeedbackSession::clear() must reset current session storage";
 }
